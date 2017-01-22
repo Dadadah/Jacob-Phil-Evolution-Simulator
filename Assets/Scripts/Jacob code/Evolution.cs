@@ -22,6 +22,7 @@ public class Evolution : MonoBehaviour {
         {
             creatures[i] = stuff[i] as Creature;
         }
+        CsvReadWrite.StartFile();
 	}
 	
 	// Update is called once per frame
@@ -29,11 +30,12 @@ public class Evolution : MonoBehaviour {
 		if (Time.time - time_since_last_evolution > 20)
         {
             print("Evolving!");
-            //LGM.UpdateValues(bestDistance, worstDistance);
-            //LGM.ShowGraph();
             generation++;
             Evolve();
             time_since_last_evolution = Time.time;
+            //LGM.UpdateValues(bestDistance, worstDistance);
+            //LGM.ShowGraph();
+            CsvReadWrite.Save(new string[] { generation.ToString(), worstDistance.ToString(), average.ToString(), bestDistance.ToString() });
         }
 	}
 
