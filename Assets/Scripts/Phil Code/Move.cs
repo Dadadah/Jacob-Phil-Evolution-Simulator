@@ -23,4 +23,9 @@ public class Move {
         return new Move(Quaternion.Slerp(A.ang, B.ang, 0.5f), (A.time + B.time) / 2);
     }
 
+    public static Move RandAvg(Move A, Move B)
+    {
+        return new Move(Quaternion.Slerp(A.ang, B.ang, Random.value), ((A.time + B.time) / 2) + (Random.value - 0.5f));
+    }
+
 }

@@ -4,6 +4,9 @@ using System;
 using UnityEngine;
 
 public class Leg : MonoBehaviour {
+
+    Vector3 rotate_point;
+
     int Upper_Length = 1;
     //int Lower_Length = 1;
     // int Foot_Size = 1;
@@ -17,11 +20,14 @@ public class Leg : MonoBehaviour {
     Move[] movements;
     int Cur_Move = 0;
     float time_since_last_change;
+    Vector3 cur_rot_axis = Vector3.zero;
+    float cur_rot_ang = 0.0f;
 
     void Start()
     {
         trans = gameObject.GetComponent(typeof(Transform)) as Transform;
         time_since_last_change = Time.time;
+        rotate_point = Vector3.up * 0.4f;
     }
 
     public void SetMove(Move[] mv)
@@ -36,16 +42,14 @@ public class Leg : MonoBehaviour {
 
     void Update()
     {
-        transform.rotation = Quaternion.Slerp(movements[Cur_Move].ang, movements[1-Cur_Move].ang, (Time.time - time_since_last_change)/movements[Cur_Move].time );
-        if (trans.rotation == movements[1].ang)
+        Quaternion.Slerp(movements[Cur_Move].ang, movements[1 - Cur_Move].ang, (Time.time - time_since_last_change) / movements[Cur_Move].time).ToAngleAxis(out cur_rot_ang, out cur_rot_axis);
+        transform.RotateAround(transform.TransformPoint(rotate_point), cur_rot_axis*Time.deltaTime / movements[Cur_Move].time, cur_rot_ang*Time.deltaTime / movements[Cur_Move].time);
+        //transform.rotation = Quaternion.Slerp(movements[Cur_Move].ang, movements[1-Cur_Move].ang, (Time.time - time_since_last_change)/movements[Cur_Move].time );
+        if ((Time.time - time_since_last_change) / movements[Cur_Move].time > 1)
         {
-            Cur_Move = 1;
+            Cur_Move = 1-Cur_Move;
             time_since_last_change = Time.time;
-        }
-        else if (trans.rotation == movements[0].ang)
-        {
-            Cur_Move = 0;
-            time_since_last_change = Time.time;
+
         }
     }
 

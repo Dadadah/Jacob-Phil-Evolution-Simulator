@@ -7,7 +7,9 @@ public class Evolution : MonoBehaviour {
     Creature[] creatures;
     Component[] stuff;
     float time_since_last_evolution;
-    int generation = 0;
+    public int generation = 0;
+    public float bestDistance = 0.0f;
+    public float average = 0.0f;
 
 	// Use this for initialization
 	void Start () {
@@ -33,18 +35,21 @@ public class Evolution : MonoBehaviour {
 
     void Evolve()
     {
+        string kilt = "Killed: ";
         float totalDistance = 0;
         for (int i = 0; i < creatures.Length; i++)
         {
             totalDistance += creatures[i].GetDistanceTraveled();
+            if (creatures[i].GetDistanceTraveled() > bestDistance) bestDistance = creatures[i].GetDistanceTraveled();
         }
-        float average = totalDistance / creatures.Length;
-        print("Average Distance: " + average + ", Generation: " + generation);
+        average = totalDistance / creatures.Length;
         for (int i = 0; i < creatures.Length; i++)
         {
-            float survivalchance = Random.value;
-            if (survivalchance < 0.02f || (survivalchance < 0.98f && creatures[i].GetDistanceTraveled() < average))
+            creatures[i].survivalChance = Mathf.Clamp((creatures[i].GetDistanceTraveled()-average)/average, -1.0f, 1.0f);
+            creatures[i].survivalChance = (creatures[i].survivalChance + 1) / 2;
+            if (creatures[i].survivalChance < Random.value)
             {
+                kilt = kilt + i + ", ";
                 creatures[i].dead = true;
             }
         }
@@ -59,26 +64,29 @@ public class Evolution : MonoBehaviour {
                 Move[] myMvs = new Move[mvsMom.Length];
                 for (int j = 0; j < myMvs.Length; j++)
                 {
-                    if (Random.value < 0.001f)
+                    float rando = Random.value;
+                    if (rando < 0.001f)
                     {
-                        //Randomness
                         myMvs[j] = new Move();
-                        print("Mutation! " + i + " has gotten a random move!");
+                        //print("Mutation! " + i + " has gotten a random move!");
+                    }
+                    else if(rando > 0.1f && rando < 0.3f)
+                    {
+                        myMvs[j] = Move.RandAvg(mvsMom[j], mvsDad[j]);
                     }
                     else
                     {
                         myMvs[j] = Move.Avg(mvsMom[j], mvsDad[j]);
-                        // More randomness
-                        if (Random.value < 0.001f)
-                        {
-                            myMvs[j].time += Random.value - 0.5f;
-                            print("Mutation! " + i + " has gotten a move's time adjusted!");
-                        }
-                        if (Random.value < 0.001f)
-                        {
-                            myMvs[j].ang = Quaternion.Slerp(myMvs[j].ang, Random.rotation, Random.value);
-                            print("Mutation! " + i + " has gotten a move's angle adjusted!");
-                        }
+                    }
+                    if (rando < 0.002f && rando > 0.004f)
+                    {
+                        myMvs[j].time += Random.value - 0.5f;
+                        //print("Mutation! " + i + " has gotten a move's time adjusted!");
+                    }
+                    else if (rando < 0.004f && rando > 0.006f)
+                    {
+                        myMvs[j].ang = Quaternion.Slerp(myMvs[j].ang, Random.rotation, Random.value);
+                        //print("Mutation! " + i + " has gotten a move's angle adjusted!");
                     }
                 }
                 creatures[i].ChangeLegs(myMvs);
@@ -88,12 +96,13 @@ public class Evolution : MonoBehaviour {
         {
             creatures[i].Reset();
         }
+        //print(kilt);
     }
 
     int findNotDead()
     {
         int i = Mathf.RoundToInt(Random.value * (creatures.Length-1));
-        while (creatures[i].dead)
+        while (creatures[i].dead && creatures[i].survivalChance < Random.value)
         {
             i = Mathf.RoundToInt(Random.value * (creatures.Length-1));
         }

@@ -9,9 +9,11 @@ public class Creature : MonoBehaviour {
     Vector3 startLoc;
     [HideInInspector]
     public bool dead = false;
+    [HideInInspector]
+    public float survivalChance = 0.0f;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         tran = gameObject.GetComponent(typeof(Transform)) as Transform;
         startLoc = tran.position;
         for (int i = 0; i < legs.Length; i++)
