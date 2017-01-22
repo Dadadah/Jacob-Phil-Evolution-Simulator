@@ -3,36 +3,50 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-public class Phil_Leg : MonoBehaviour {
-    private Leg me;
-    public void Start()
-    {
-        me = new Leg();
-    }
-}
-
-class Leg
-{
+public class Leg : MonoBehaviour {
     int Upper_Length = 1;
     //int Lower_Length = 1;
-   // int Foot_Size = 1;
+    // int Foot_Size = 1;
+
+    Transform trans;
 
     Quaternion Leg_Start_Rot = Quaternion.identity;
   //  Quaternion Knee_Start_Rot = Quaternion.identity;
   //  Quaternion Ankle_Start_Rot = Quaternion.identity;
 
-    Quaternion Leg_Curr_Rot;
-    //Quaternion Knee_Curr_Rot;
-    //Quaternion Ankle_Curr_Rot;
-
     Move[] movements;
     int Cur_Move = 0;
+    float time_since_last_change;
 
-    public Leg()
+    void Start()
     {
-        Leg_Curr_Rot = Leg_Start_Rot;
-        // Knee_Curr_Rot = Knee_Start_Rot;
-        // Ankle_Curr_Rot = Ankle_Start_Rot;
+        trans = gameObject.GetComponent(typeof(Transform)) as Transform;
+        time_since_last_change = Time.time;
+    }
+
+    public void SetMove(Move[] mv)
+    {
+        movements = mv;
+    }
+
+    public Move[] GetMove()
+    {
+        return movements;
+    }
+
+    void Update()
+    {
+        transform.rotation = Quaternion.Slerp(movements[Cur_Move].ang, movements[1-Cur_Move].ang, (Time.time - time_since_last_change)/movements[Cur_Move].time );
+        if (trans.rotation == movements[1].ang)
+        {
+            Cur_Move = 1;
+            time_since_last_change = Time.time;
+        }
+        else if (trans.rotation == movements[0].ang)
+        {
+            Cur_Move = 0;
+            time_since_last_change = Time.time;
+        }
     }
 
     public static Leg Avg(Leg A,Leg B)
@@ -63,27 +77,10 @@ class Leg
 
         return output;
     }
+
     public void Mutate()
     {
         //TODO: See If we will actually need this...
-    }
-
-}
-
-
-class Move
-{
-    Quaternion  ang;
-    float       time;
-
-    public Move(Quaternion _ang, float _t){
-        ang = _ang;
-        time = _t;
-    }
-
-    public static Move Avg(Move A,Move B)
-    {
-        return new Move(Quaternion.Slerp(A.ang, B.ang, 0.5f), (A.time + B.time) / 2);
     }
 
 }
