@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Move {
-    public readonly Quaternion ang;
-    public readonly float time;
+    public Quaternion ang;
+    public float time;
+
+    public Move()
+    {
+        ang = Random.rotation;
+        time = Mathf.Clamp(Random.value, 0.01f, 1) * 10;
+    }
 
     public Move(Quaternion _ang, float _t)
     {
@@ -14,7 +20,7 @@ public class Move {
 
     public static Move Avg(Move A, Move B)
     {
-        return new Move(Quaternion.Slerp(A.ang, B.ang, 0.5f), ((A.time + B.time) / 2) + (Random.value-0.5f));
+        return new Move(Quaternion.Slerp(A.ang, B.ang, 0.5f), (A.time + B.time) / 2);
     }
 
 }

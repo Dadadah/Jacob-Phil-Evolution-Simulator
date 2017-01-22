@@ -43,7 +43,7 @@ public class Evolution : MonoBehaviour {
         for (int i = 0; i < creatures.Length; i++)
         {
             float survivalchance = Random.value;
-            if (survivalchance < 0.02 || (survivalchance < 0.98 && creatures[i].GetDistanceTraveled() < average))
+            if (survivalchance < 0.02f || (survivalchance < 0.98f && creatures[i].GetDistanceTraveled() < average))
             {
                 creatures[i].dead = true;
             }
@@ -59,7 +59,27 @@ public class Evolution : MonoBehaviour {
                 Move[] myMvs = new Move[mvsMom.Length];
                 for (int j = 0; j < myMvs.Length; j++)
                 {
-                    myMvs[j] = Move.Avg(mvsMom[j], mvsDad[j]);
+                    if (Random.value < 0.001f)
+                    {
+                        //Randomness
+                        myMvs[j] = new Move();
+                        print("Mutation! " + i + " has gotten a random move!");
+                    }
+                    else
+                    {
+                        myMvs[j] = Move.Avg(mvsMom[j], mvsDad[j]);
+                        // More randomness
+                        if (Random.value < 0.001f)
+                        {
+                            myMvs[j].time += Random.value - 0.5f;
+                            print("Mutation! " + i + " has gotten a move's time adjusted!");
+                        }
+                        if (Random.value < 0.001f)
+                        {
+                            myMvs[j].ang = Quaternion.Slerp(myMvs[j].ang, Random.rotation, Random.value);
+                            print("Mutation! " + i + " has gotten a move's angle adjusted!");
+                        }
+                    }
                 }
                 creatures[i].ChangeLegs(myMvs);
             }
