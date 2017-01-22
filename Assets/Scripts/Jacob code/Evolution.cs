@@ -9,7 +9,9 @@ public class Evolution : MonoBehaviour {
     float time_since_last_evolution;
     public int generation = 0;
     public float bestDistance = 0.0f;
+    public float worstDistance = 0.0f;
     public float average = 0.0f;
+    public LineGraphManager LGM;
 
 	// Use this for initialization
 	void Start () {
@@ -27,6 +29,8 @@ public class Evolution : MonoBehaviour {
 		if (Time.time - time_since_last_evolution > 20)
         {
             print("Evolving!");
+            //LGM.UpdateValues(bestDistance, worstDistance);
+            //LGM.ShowGraph();
             generation++;
             Evolve();
             time_since_last_evolution = Time.time;
@@ -36,11 +40,14 @@ public class Evolution : MonoBehaviour {
     void Evolve()
     {
         string kilt = "Killed: ";
+        bestDistance = 0.0f;
+        worstDistance = float.MaxValue;
         float totalDistance = 0;
         for (int i = 0; i < creatures.Length; i++)
         {
             totalDistance += creatures[i].GetDistanceTraveled();
             if (creatures[i].GetDistanceTraveled() > bestDistance) bestDistance = creatures[i].GetDistanceTraveled();
+            if (creatures[i].GetDistanceTraveled() < worstDistance) worstDistance = creatures[i].GetDistanceTraveled();
         }
         average = totalDistance / creatures.Length;
         for (int i = 0; i < creatures.Length; i++)
