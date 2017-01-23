@@ -134,6 +134,11 @@ public class Evolution : MonoBehaviour {
                     }
                 }
                 creatures[i].ChangeLegs(myMvs);
+                creatures[i].gameObject.transform.localScale = (Mom.gameObject.transform.localScale + Dad.gameObject.transform.localScale) / 2;
+                if (Random.value < 0.002f)
+                {
+                    creatures[i].gameObject.transform.localScale = creatures[i].gameObject.transform.localScale * (1.0f+((Random.value-0.5f) * 0.01f));
+                }
             }
         }
         for (int i = 0; i < creatures.Length; i++)
