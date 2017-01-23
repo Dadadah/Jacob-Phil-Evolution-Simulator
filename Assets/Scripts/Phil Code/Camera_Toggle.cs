@@ -19,6 +19,5 @@ public class Camera_Toggle : MonoBehaviour {
         }
         Main.enabled = MainCam;
         CloseCam.enabled = !MainCam;
-
 	}
 }
