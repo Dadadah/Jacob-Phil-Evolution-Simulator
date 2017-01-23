@@ -34,7 +34,6 @@ public class Evolution : MonoBehaviour {
                 rb.isKinematic = true;
                 tran.position = loc;
                 rb.isKinematic = false;
-
                 loc = loc + (Vector3.left * 15);
             }
             loc = loc + (Vector3.back * 15) - (Vector3.left * 15 * x);
@@ -47,6 +46,9 @@ public class Evolution : MonoBehaviour {
         {
             creatures[i] = stuff[i] as Creature;
         }
+
+        Physics.IgnoreLayerCollision(8, 8, true);
+
         CsvReadWrite.StartFile();
     }
 	
@@ -121,7 +123,7 @@ public class Evolution : MonoBehaviour {
                 for (int j = 0; j < myMvs.Length; j++)
                 {
                     float rando = Random.value;
-                    if (rando < 0.001f)
+                    if (rando < 0.01f)
                     {
                         myMvs[j] = new Move();
                         //print("Mutation! " + i + " has gotten a random move!");
@@ -134,12 +136,12 @@ public class Evolution : MonoBehaviour {
                     {
                         myMvs[j] = Move.Avg(mvsMom[j], mvsDad[j]);
                     }
-                    if (rando < 0.002f && rando > 0.004f)
+                    if (rando < 0.3f && rando > 0.5f)
                     {
                         myMvs[j].time += Random.value - 0.5f;
                         //print("Mutation! " + i + " has gotten a move's time adjusted!");
                     }
-                    else if (rando < 0.004f && rando > 0.006f)
+                    else if (rando < 0.6f && rando > 0.8f)
                     {
                         myMvs[j].ang = Quaternion.Slerp(myMvs[j].ang, Random.rotation, Random.value);
                         //print("Mutation! " + i + " has gotten a move's angle adjusted!");
@@ -147,7 +149,7 @@ public class Evolution : MonoBehaviour {
                 }
                 creatures[i].ChangeLegs(myMvs);
                 creatures[i].gameObject.transform.localScale = (Mom.gameObject.transform.localScale + Dad.gameObject.transform.localScale) / 2;
-                if (Random.value < 0.002f)
+                if (Random.value < 0.01f)
                 {
                     creatures[i].gameObject.transform.localScale = creatures[i].gameObject.transform.localScale * (1.0f+((Random.value-0.5f) * 0.05f));
                 }
