@@ -13,9 +13,13 @@ public class Leg : MonoBehaviour {
 
     Transform trans;
 
-    Quaternion Leg_Start_Rot = Quaternion.identity;
-  //  Quaternion Knee_Start_Rot = Quaternion.identity;
-  //  Quaternion Ankle_Start_Rot = Quaternion.identity;
+    Quaternion Leg_Start_Rot;
+    //  Quaternion Knee_Start_Rot = Quaternion.identity;
+    //  Quaternion Ankle_Start_Rot = Quaternion.identity;
+
+    Vector3 Leg_Start_Pos;
+    //  Vector3 Knee_Start_Pos = Quaternion.identity;
+    //  Vector3 Angle_Start_Pos = Quaternion.identity;
 
     Move[] movements;
     int Cur_Move = 0;
@@ -26,8 +30,16 @@ public class Leg : MonoBehaviour {
     void Start()
     {
         trans = gameObject.GetComponent(typeof(Transform)) as Transform;
+        Leg_Start_Pos = trans.position;
+        Leg_Start_Rot = trans.rotation;
         time_since_last_change = Time.time;
         rotate_point = Vector3.up * 0.4f;
+    }
+
+    public void Reset()
+    {
+        transform.rotation = Leg_Start_Rot;
+        transform.position = Leg_Start_Pos;
     }
 
     public void SetMove(Move[] mv)

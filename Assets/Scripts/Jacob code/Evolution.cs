@@ -27,7 +27,7 @@ public class Evolution : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Time.time - time_since_last_evolution > 20)
+		if (Time.time - time_since_last_evolution > 60)
         {
             print("Evolving!");
             generation++;
