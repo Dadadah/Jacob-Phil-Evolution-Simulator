@@ -66,6 +66,6 @@ public class Creature : MonoBehaviour {
 
     public float GetDistanceTraveled()
     {
-        return Vector3.Distance(tran.position, startLoc);
+        return Vector3.Distance(new Vector3(tran.position.x,0,tran.position.z), new Vector3(startLoc.x,0,startLoc.z));
     }
 }

@@ -6,6 +6,7 @@ public class Evolution : MonoBehaviour {
 
     Creature[] creatures;
     Component[] stuff;
+
     float time_since_last_evolution;
     public int x;
     public int y;
@@ -15,7 +16,8 @@ public class Evolution : MonoBehaviour {
     public float average = 0.0f;
     public LineGraphManager LGM;
     public GameObject wombat;
-
+    GameObject bestWombat;
+    public GameObject CloseCam;
 	// Use this for initialization
 	void Start () {
 
@@ -61,6 +63,13 @@ public class Evolution : MonoBehaviour {
         }
 	}
 
+    //Draws GUI on Screen
+    void OnGUI()
+    {
+        GUILayout.Label(generation.ToString());
+
+    }
+
     void Evolve()
     {
         string kilt = "Killed: ";
@@ -70,7 +79,11 @@ public class Evolution : MonoBehaviour {
         for (int i = 0; i < creatures.Length; i++)
         {
             totalDistance += creatures[i].GetDistanceTraveled();
-            if (creatures[i].GetDistanceTraveled() > bestDistance) bestDistance = creatures[i].GetDistanceTraveled();
+            if (creatures[i].GetDistanceTraveled() > bestDistance)
+            {
+                bestDistance = creatures[i].GetDistanceTraveled();
+                bestWombat = creatures[i].gameObject;
+            }
             if (creatures[i].GetDistanceTraveled() < worstDistance) worstDistance = creatures[i].GetDistanceTraveled();
         }
         average = totalDistance / creatures.Length;
@@ -128,6 +141,7 @@ public class Evolution : MonoBehaviour {
             creatures[i].Reset();
         }
         //print(kilt);
+        CloseCam.transform.position = bestWombat.transform.position;
     }
 
     int findNotDead()
