@@ -66,7 +66,8 @@ public class Evolution : MonoBehaviour {
     //Draws GUI on Screen
     void OnGUI()
     {
-        GUILayout.Label(generation.ToString());
+        GUILayout.Label("Generation: "+generation.ToString());
+        CloseCam.GetComponent<Spin>().Speed.y = GUILayout.HorizontalSlider(CloseCam.GetComponent<Spin>().Speed.y, -1.0F, 1.0F);
 
     }
 
@@ -137,7 +138,7 @@ public class Evolution : MonoBehaviour {
                 creatures[i].gameObject.transform.localScale = (Mom.gameObject.transform.localScale + Dad.gameObject.transform.localScale) / 2;
                 if (Random.value < 0.002f)
                 {
-                    creatures[i].gameObject.transform.localScale = creatures[i].gameObject.transform.localScale * (1.0f+((Random.value-0.5f) * 0.01f));
+                    creatures[i].gameObject.transform.localScale = creatures[i].gameObject.transform.localScale * (1.0f+((Random.value-0.5f) * 0.05f));
                 }
             }
         }
@@ -146,7 +147,7 @@ public class Evolution : MonoBehaviour {
             creatures[i].Reset();
         }
         //print(kilt);
-        CloseCam.transform.position = bestWombat.transform.position;
+        CloseCam.GetComponent<Camera_Toggle>().target = bestWombat;
     }
 
     int findNotDead()

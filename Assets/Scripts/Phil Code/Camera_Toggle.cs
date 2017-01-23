@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Camera_Toggle : MonoBehaviour {
     bool MainCam = true;
+    public GameObject target;
     public Camera Main;
     public Camera CloseCam;
     // Use this for initialization
@@ -19,5 +20,7 @@ public class Camera_Toggle : MonoBehaviour {
         }
         Main.enabled = MainCam;
         CloseCam.enabled = !MainCam;
+        if(target != null)transform.position = target.transform.position;
 	}
+
 }
