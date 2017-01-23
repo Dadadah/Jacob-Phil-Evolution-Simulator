@@ -11,6 +11,7 @@ public class Evolution : MonoBehaviour {
     public int x;
     public int y;
     public int generation = 0;
+    public int lastKilled = 0;
     public float bestDistance = 0.0f;
     public float worstDistance = 0.0f;
     public float average = 0.0f;
@@ -66,14 +67,24 @@ public class Evolution : MonoBehaviour {
     //Draws GUI on Screen
     void OnGUI()
     {
+
         GUILayout.Label("Generation: "+generation.ToString());
+        GUILayout.Label("Killed Last Gen: " + lastKilled);
+        GUILayout.Label("");
+        GUILayout.Label("Best Distance:  " + bestDistance.ToString("F3"));
+        GUILayout.Label("Mean Distance:  " + average.ToString("F3"));
+        GUILayout.Label("Worst Distance: " + worstDistance.ToString("F3"));
+        GUILayout.Label("");
+        GUILayout.Label("Cam Speed: " + CloseCam.GetComponent<Spin>().Speed.y);
         CloseCam.GetComponent<Spin>().Speed.y = GUILayout.HorizontalSlider(CloseCam.GetComponent<Spin>().Speed.y, -1.0F, 1.0F);
+
 
     }
 
     void Evolve()
     {
-        string kilt = "Killed: ";
+   
+        lastKilled = 0;
         bestDistance = 0.0f;
         worstDistance = float.MaxValue;
         float totalDistance = 0;
@@ -94,8 +105,8 @@ public class Evolution : MonoBehaviour {
             creatures[i].survivalChance = (creatures[i].survivalChance + 1) / 2;
             if (creatures[i].survivalChance < Random.value)
             {
-                kilt = kilt + i + ", ";
                 creatures[i].dead = true;
+                lastKilled++;
             }
         }
         for (int i = 0; i < creatures.Length; i++)
@@ -146,7 +157,6 @@ public class Evolution : MonoBehaviour {
         {
             creatures[i].Reset();
         }
-        //print(kilt);
         CloseCam.GetComponent<Camera_Toggle>().target = bestWombat;
     }
 
