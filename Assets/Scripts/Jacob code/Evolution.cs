@@ -7,14 +7,36 @@ public class Evolution : MonoBehaviour {
     Creature[] creatures;
     Component[] stuff;
     float time_since_last_evolution;
+    public int x;
+    public int y;
     public int generation = 0;
     public float bestDistance = 0.0f;
     public float worstDistance = 0.0f;
     public float average = 0.0f;
     public LineGraphManager LGM;
+    public GameObject wombat;
 
 	// Use this for initialization
 	void Start () {
+
+        Vector3 loc = new Vector3();
+
+        for (int i = 0; i < y; i++)
+        {
+            for (int j = 0; j < x; j++)
+            {
+                GameObject wom = Instantiate(wombat, gameObject.GetComponent(typeof(Transform)) as Transform) as GameObject;
+                Transform tran = wom.GetComponent(typeof(Transform)) as Transform;
+                Rigidbody rb = wom.GetComponentInChildren(typeof(Rigidbody)) as Rigidbody;
+                rb.isKinematic = true;
+                tran.position = loc;
+                rb.isKinematic = false;
+
+                loc = loc + (Vector3.left * 15);
+            }
+            loc = loc + (Vector3.back * 15) - (Vector3.left * 15 * x);
+        }
+
         time_since_last_evolution = Time.time;
         stuff  = gameObject.GetComponentsInChildren(typeof(Creature), true);
         creatures = new Creature[stuff.Length];
@@ -23,7 +45,7 @@ public class Evolution : MonoBehaviour {
             creatures[i] = stuff[i] as Creature;
         }
         CsvReadWrite.StartFile();
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
