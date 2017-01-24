@@ -75,6 +75,7 @@ public class Evolution : MonoBehaviour {
 	}
 
     //Draws GUI on Screen
+    #region DrawHud
     void OnGUI()
     {
 
@@ -90,13 +91,26 @@ public class Evolution : MonoBehaviour {
             FEV = GUILayout.Toggle(FEV, "Enable FEV");
             GUILayout.Label("");
             GUILayout.Label("Cam Speed: " + CloseCam.GetComponent<Spin>().Speed.y.ToString("F3"));
-            GUILayout.Label("");
-            GUILayout.Label((creatures[findNotDead()].dead).ToString());
             CloseCam.GetComponent<Spin>().Speed.y = GUILayout.HorizontalSlider(CloseCam.GetComponent<Spin>().Speed.y, -1.0F, 1.0F);
+            GUILayout.Label("");
+            GUILayout.Label("Sim Speed: " + Time.timeScale.ToString("G2"));
+            Time.timeScale = GUILayout.HorizontalSlider(Time.timeScale,0.25F, 20.0F);
+
+        }
+        else
+        {
+            GUILayout.Label("Killed Last Gen: " + lastKilled);
+            GUILayout.Label("");
+            GUILayout.Label("Mean Distance:  " + average.ToString("F3"));
+            GUILayout.Label("Standard Deviation: " + standardDeviation.ToString("F3"));
+            GUILayout.Label("");
+            GUILayout.Label("Sim Speed: " + Time.timeScale.ToString("G2"));
         }
 
 
+
     }
+    #endregion
 
     void Evolve()
     {
