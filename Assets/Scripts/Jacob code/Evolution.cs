@@ -20,6 +20,7 @@ public class Evolution : MonoBehaviour {
     public float bestDistance = 0.0f;
     public float worstDistance = 0.0f;
     public float average = 0.0f;
+    public float standardDeviation = 0.0f;
     public GameObject wombat;
     GameObject bestWombat;
     public GameObject CloseCam;
@@ -27,6 +28,8 @@ public class Evolution : MonoBehaviour {
 	void Start () {
 
         Vector3 loc = new Vector3();
+        loc = loc + (Vector3.right * 15 * (x / 2));
+        loc = loc + (Vector3.forward * 15 * (y / 2));
         livebats = new List<Creature>();
         for (int i = 0; i < y; i++)
         {
@@ -83,6 +86,7 @@ public class Evolution : MonoBehaviour {
             GUILayout.Label("Best Distance:  " + bestDistance.ToString("F3"));
             GUILayout.Label("Mean Distance:  " + average.ToString("F3"));
             GUILayout.Label("Worst Distance: " + worstDistance.ToString("F3"));
+            GUILayout.Label("Standard Deviation: " + standardDeviation.ToString("F3"));
             FEV = GUILayout.Toggle(FEV, "Enable FEV");
             GUILayout.Label("");
             GUILayout.Label("Cam Speed: " + CloseCam.GetComponent<Spin>().Speed.y.ToString("F3"));
@@ -100,11 +104,11 @@ public class Evolution : MonoBehaviour {
         lastKilled = 0;
         bestDistance = 0.0f;
         worstDistance = float.MaxValue;
-        float totalDistance = 0;
+        float[] totalDistance = new float[creatures.Length];
         //Test results
         for (int i = 0; i < creatures.Length; i++)
         {
-            totalDistance += creatures[i].GetDistanceTraveled();
+            totalDistance[i] = creatures[i].GetDistanceTraveled();
             if (creatures[i].GetDistanceTraveled() > bestDistance)
             {
                 bestDistance = creatures[i].GetDistanceTraveled();
@@ -112,12 +116,36 @@ public class Evolution : MonoBehaviour {
             }
             if (creatures[i].GetDistanceTraveled() < worstDistance) worstDistance = creatures[i].GetDistanceTraveled();
         }
-        average = totalDistance / creatures.Length;
+        average = 0;
+        foreach (float i in totalDistance)
+        {
+            average += i;
+        }
+        average /= totalDistance.Length;
+        standardDeviation = 0;
+        for (int i = 0; i < totalDistance.Length;i++)
+        {
+            standardDeviation += Mathf.Pow(totalDistance[i] - average, 2);
+        }
+        standardDeviation /= totalDistance.Length;
+        standardDeviation = Mathf.Sqrt(standardDeviation);
         //Death
         for (int i = 0; i < creatures.Length; i++)
         {
-            creatures[i].survivalChance = Mathf.Clamp((creatures[i].GetDistanceTraveled()-average)/average, -1.0f, 1.0f);
-            creatures[i].survivalChance = (creatures[i].survivalChance + 1) / 2;
+            creatures[i].survivalChance = creatures[i].GetDistanceTraveled();
+            if (creatures[i].survivalChance < average - standardDeviation)
+            {
+                creatures[i].survivalChance = 0.0f;
+            }
+            else if (creatures[i].survivalChance > average + standardDeviation)
+            {
+                creatures[i].survivalChance = 1.0f;
+            }
+            else
+            {
+                creatures[i].survivalChance = Mathf.Clamp((creatures[i].GetDistanceTraveled() - (2 * standardDeviation)) / (2 * standardDeviation), -1.0f, 1.0f);
+                creatures[i].survivalChance = (creatures[i].survivalChance + 1) / 2;
+            }
             if (creatures[i].survivalChance < Random.value || (creatures[i].GetDistanceTraveled() < average && FEV))
             {
                 creatures[i].dead = true;
@@ -131,7 +159,6 @@ public class Evolution : MonoBehaviour {
             {
                 Creature Mom = creatures[findNotDead()];
                 Creature Dad = creatures[findNotDead()];
-                if (Dad.dead || Mom.dead) print("MY PARENTS WHERE DEAD!!! Dad: "+Dad.dead+" Mom: "+Mom.dead);
                 Move[] mvsMom = Mom.WatRMyLegs();
                 Move[] mvsDad = Dad.WatRMyLegs();
                 Move[] myMvs = new Move[mvsMom.Length];

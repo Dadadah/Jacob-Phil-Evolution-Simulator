@@ -55,7 +55,7 @@ public class Leg : MonoBehaviour {
     void Update()
     {
         Quaternion.Slerp(movements[Cur_Move].ang, movements[1 - Cur_Move].ang, (Time.time - time_since_last_change) / movements[Cur_Move].time).ToAngleAxis(out cur_rot_ang, out cur_rot_axis);
-        transform.RotateAround(transform.TransformPoint(rotate_point), cur_rot_axis*Time.deltaTime / movements[Cur_Move].time, cur_rot_ang*Time.deltaTime / movements[Cur_Move].time);
+        transform.RotateAround(transform.TransformPoint(rotate_point), cur_rot_axis * Time.deltaTime / movements[Cur_Move].time, cur_rot_ang * Time.deltaTime / movements[Cur_Move].time);
         //transform.rotation = Quaternion.Slerp(movements[Cur_Move].ang, movements[1-Cur_Move].ang, (Time.time - time_since_last_change)/movements[Cur_Move].time );
         if ((Time.time - time_since_last_change) / movements[Cur_Move].time > 1)
         {
