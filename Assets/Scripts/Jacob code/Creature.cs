@@ -68,4 +68,10 @@ public class Creature : MonoBehaviour {
     {
         return Vector3.Distance(new Vector3(tran.position.x,0,tran.position.z), new Vector3(startLoc.x,0,startLoc.z));
     }
+
+    public static Creature Breed(Creature A , Creature B)
+    {
+        Debug.LogError("Creature Breed is Unimplemented!");
+        return null;
+    }
 }

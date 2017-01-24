@@ -33,7 +33,7 @@ public class CsvReadWrite
         StringBuilder sb = new StringBuilder();
 
         for (int index = 0; index < length; index++)
-            sb.AppendLine(string.Join(delimiter, output[index]));
+            sb.Append(string.Join(delimiter, output[index]));
 
 
         string filePath = getPath();
@@ -64,7 +64,7 @@ public class CsvReadWrite
         StringBuilder sb = new StringBuilder();
 
         for (int index = 0; index < length; index++)
-            sb.AppendLine(string.Join(delimiter, output[index]));
+            sb.Append(string.Join(delimiter, output[index]));
 
 
         string filePath = getPath();
