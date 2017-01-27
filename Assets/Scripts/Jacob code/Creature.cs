@@ -20,7 +20,15 @@ public class Creature : MonoBehaviour {
         startRot = tran.rotation;
         for (int i = 0; i < legs.Length; i++)
         {
-            legs[i].SetMove(new Move[2] { new Move(Quaternion.identity, Mathf.Clamp(Random.value, 0.1f, 1)*10), new Move(Quaternion.identity, Mathf.Clamp(Random.value, 0.1f, 1) * 10) });
+            legs[i].SetMove(new Move[2] { new Move(Random.rotation, Mathf.Clamp(Random.value, 0.1f, 1)*10), new Move(Random.rotation, Mathf.Clamp(Random.value, 0.1f, 1) * 10) });
+        }
+    }
+
+    public void Randomize ()
+    {
+        for (int i = 0; i < legs.Length; i++)
+        {
+            legs[i].SetMove(new Move[2] { new Move(Random.rotation, Mathf.Clamp(Random.value, 0.1f, 1) * 10), new Move(Random.rotation, Mathf.Clamp(Random.value, 0.1f, 1) * 10) });
         }
     }
 	

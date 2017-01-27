@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Evolution : MonoBehaviour {
 
     Creature[] creatures;
+    Creature[] oldCreatures;
     Component[] stuff;
-
-    List<Creature> livebats;
 
     float time_since_last_evolution;
     bool FEV = false;
@@ -28,9 +28,8 @@ public class Evolution : MonoBehaviour {
 	void Start () {
 
         Vector3 loc = new Vector3();
-        loc = loc + (Vector3.right * 15 * (x / 2));
-        loc = loc + (Vector3.forward * 15 * (y / 2));
-        livebats = new List<Creature>();
+        loc = loc + (Vector3.right * spacing * (x / 2));
+        loc = loc + (Vector3.forward * spacing * (y / 2));
         for (int i = 0; i < y; i++)
         {
             for (int j = 0; j < x; j++)
@@ -41,9 +40,9 @@ public class Evolution : MonoBehaviour {
                 rb.isKinematic = true;
                 tran.position = loc;
                 rb.isKinematic = false;
-                loc = loc + (Vector3.left * 15);
+                loc = loc + (Vector3.left * spacing);
             }
-            loc = loc + (Vector3.back * 15) - (Vector3.left * 15 * x);
+            loc = loc + (Vector3.back * spacing) - (Vector3.left * spacing * x);
         }
 
         time_since_last_evolution = Time.time;
@@ -167,9 +166,11 @@ public class Evolution : MonoBehaviour {
             }
         }
         //Reproduction
+        creatures.OrderByDescending(Creature => Creature.GetDistanceTraveled());
+        oldCreatures = creatures;
         for (int i = 0; i < creatures.Length; i++)
         {
-            if (creatures[i].dead)
+            if (oldCreatures[i].dead || i > 10)
             {
                 Creature Mom = creatures[findNotDead()];
                 Creature Dad = creatures[findNotDead()];
@@ -184,7 +185,7 @@ public class Evolution : MonoBehaviour {
                         myMvs[j] = new Move();
                         //print("Mutation! " + i + " has gotten a random move!");
                     }
-                    else if(rando > 0.1f && rando < 0.3f)
+                    else if (rando > 0.1f && rando < 0.1f)
                     {
                         myMvs[j] = Move.RandAvg(mvsMom[j], mvsDad[j]);
                     }
@@ -192,12 +193,12 @@ public class Evolution : MonoBehaviour {
                     {
                         myMvs[j] = Move.Avg(mvsMom[j], mvsDad[j]);
                     }
-                    if (rando < 0.3f && rando > 0.5f)
+                    if (rando < 0.3f && rando > 0.4f)
                     {
                         myMvs[j].time += Random.value - 0.5f;
                         //print("Mutation! " + i + " has gotten a move's time adjusted!");
                     }
-                    else if (rando < 0.6f && rando > 0.8f)
+                    else if (rando < 0.6f && rando > 0.7f)
                     {
                         myMvs[j].ang = Quaternion.Slerp(myMvs[j].ang, Random.rotation, Random.value);
                         //print("Mutation! " + i + " has gotten a move's angle adjusted!");
@@ -207,13 +208,10 @@ public class Evolution : MonoBehaviour {
                 creatures[i].gameObject.transform.localScale = (Mom.gameObject.transform.localScale + Dad.gameObject.transform.localScale) / 2;
                 if (Random.value < 0.05f)
                 {
-                    creatures[i].gameObject.transform.localScale = creatures[i].gameObject.transform.localScale * (1.0f+((Random.value-0.5f) * 0.05f));
+                    creatures[i].gameObject.transform.localScale = creatures[i].gameObject.transform.localScale * (1.0f + ((Random.value - 0.5f) * 0.05f));
                 }
             }
-        }
-        //Reset
-        for (int i = 0; i < creatures.Length; i++)
-        {
+            // Reset
             creatures[i].Reset();
         }
         CloseCam.GetComponent<Camera_Toggle>().target = bestWombat;
@@ -221,10 +219,10 @@ public class Evolution : MonoBehaviour {
 
     int findNotDead()
     {
-        int i = Mathf.RoundToInt(Random.value * (creatures.Length-1));
-        while (creatures[i].dead || creatures[i].survivalChance < Random.value)
+        int i = Mathf.RoundToInt(Random.value * (oldCreatures.Length-1));
+        while (oldCreatures[i].dead || oldCreatures[i].survivalChance < Random.value)
         {
-            i = Mathf.RoundToInt(Random.value * (creatures.Length-1));
+            i = Mathf.RoundToInt(Random.value * (oldCreatures.Length-1));
         }
         return i;
     }
