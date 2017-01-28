@@ -24,9 +24,8 @@ public class Evolution : MonoBehaviour {
     public GameObject wombat;
     GameObject bestWombat;
     public GameObject CloseCam;
-	// Use this for initialization
-	void Start () {
 
+	void Start () {
         Vector3 loc = new Vector3();
         loc = loc + (Vector3.right * spacing * (x / 2));
         loc = loc + (Vector3.forward * spacing * (y / 2));
@@ -58,7 +57,6 @@ public class Evolution : MonoBehaviour {
         CsvReadWrite.StartFile();
     }
 	
-	// Update is called once per frame
 	void Update () {
 		if (Time.time - time_since_last_evolution > 60)
         {
@@ -68,7 +66,7 @@ public class Evolution : MonoBehaviour {
             time_since_last_evolution = Time.time;
             //LGM.UpdateValues(bestDistance, worstDistance);
             //LGM.ShowGraph();
-            CsvReadWrite.Save(new string[] { generation.ToString(), worstDistance.ToString(), average.ToString(), bestDistance.ToString() });
+            CsvReadWrite.Save(new string[] { generation.ToString(), worstDistance.ToString(), average.ToString(), bestDistance.ToString(), standardDeviation.ToString() });
         }
         if (Input.GetKeyDown("tab")) extraHud = !extraHud;
 	}
@@ -113,12 +111,14 @@ public class Evolution : MonoBehaviour {
 
     void Evolve()
     {
-   
         lastKilled = 0;
         bestDistance = 0.0f;
         worstDistance = float.MaxValue;
         float[] totalDistance = new float[creatures.Length];
-        //Test results
+        creatures.OrderByDescending(Creature => Creature.GetDistanceTraveled());
+        oldCreatures = creatures;
+
+        //Test Fitness
         for (int i = 0; i < creatures.Length; i++)
         {
             totalDistance[i] = creatures[i].GetDistanceTraveled();
@@ -129,12 +129,9 @@ public class Evolution : MonoBehaviour {
             }
             if (creatures[i].GetDistanceTraveled() < worstDistance) worstDistance = creatures[i].GetDistanceTraveled();
         }
-        average = 0;
-        foreach (float i in totalDistance)
-        {
-            average += i;
-        }
-        average /= totalDistance.Length;
+
+        //Statistics Calculations
+        average = totalDistance.Average();
         standardDeviation = 0;
         for (int i = 0; i < totalDistance.Length;i++)
         {
@@ -142,8 +139,10 @@ public class Evolution : MonoBehaviour {
         }
         standardDeviation /= totalDistance.Length;
         standardDeviation = Mathf.Sqrt(standardDeviation);
+
         //Death
-        for (int i = 0; i < creatures.Length; i++)
+        //i == 10 because we want to preserve the top 10, no matter what.
+        for (int i = 10; i < creatures.Length; i++)
         {
             creatures[i].survivalChance = creatures[i].GetDistanceTraveled();
             if (creatures[i].survivalChance < average - standardDeviation)
@@ -165,12 +164,11 @@ public class Evolution : MonoBehaviour {
                 lastKilled++;
             }
         }
+
         //Reproduction
-        creatures.OrderByDescending(Creature => Creature.GetDistanceTraveled());
-        oldCreatures = creatures;
         for (int i = 0; i < creatures.Length; i++)
         {
-            if (oldCreatures[i].dead || i > 10)
+            if (i >= 10)
             {
                 Creature Mom = creatures[findNotDead()];
                 Creature Dad = creatures[findNotDead()];
@@ -185,7 +183,7 @@ public class Evolution : MonoBehaviour {
                         myMvs[j] = new Move();
                         //print("Mutation! " + i + " has gotten a random move!");
                     }
-                    else if (rando > 0.1f && rando < 0.1f)
+                    else if (rando > 0.1f && rando < 0.2f)
                     {
                         myMvs[j] = Move.RandAvg(mvsMom[j], mvsDad[j]);
                     }
@@ -195,12 +193,12 @@ public class Evolution : MonoBehaviour {
                     }
                     if (rando < 0.3f && rando > 0.4f)
                     {
-                        myMvs[j].time += Random.value - 0.5f;
+                        myMvs[j].RandomizeTime();
                         //print("Mutation! " + i + " has gotten a move's time adjusted!");
                     }
                     else if (rando < 0.6f && rando > 0.7f)
                     {
-                        myMvs[j].ang = Quaternion.Slerp(myMvs[j].ang, Random.rotation, Random.value);
+                        myMvs[j].RandomizeAngle();
                         //print("Mutation! " + i + " has gotten a move's angle adjusted!");
                     }
                 }
@@ -211,7 +209,7 @@ public class Evolution : MonoBehaviour {
                     creatures[i].gameObject.transform.localScale = creatures[i].gameObject.transform.localScale * (1.0f + ((Random.value - 0.5f) * 0.05f));
                 }
             }
-            // Reset
+            //Reset
             creatures[i].Reset();
         }
         CloseCam.GetComponent<Camera_Toggle>().target = bestWombat;

@@ -18,6 +18,16 @@ public class Move {
         time = _t;
     }
 
+    public void RandomizeTime()
+    {
+        time = Random.value;
+    }
+
+    public void RandomizeAngle()
+    {
+        ang = Quaternion.Slerp(ang, Random.rotation, Random.value);
+    }
+
     public static Move Avg(Move A, Move B)
     {
         return new Move(Quaternion.Slerp(A.ang, B.ang, 0.5f), (A.time + B.time) / 2);

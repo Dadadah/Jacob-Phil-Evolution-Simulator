@@ -11,12 +11,13 @@ public class CsvReadWrite
     {
 
         // Creating First row of titles manually..
-        string[] rowDataTemp = new string[4];
+        string[] rowDataTemp = new string[5];
         List<string[]> rowData = new List<string[]>();
         rowDataTemp[0] = "Generation";
         rowDataTemp[1] = "Min";
         rowDataTemp[2] = "Average";
         rowDataTemp[3] = "Max";
+        rowDataTemp[4] = "Standard Deviation";
         rowData.Add(rowDataTemp);
 
 

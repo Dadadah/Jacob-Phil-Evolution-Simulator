@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Creature : MonoBehaviour {
+public class Creature : MonoBehaviour
+{
     
     public Leg[] legs;
     Transform tran;
